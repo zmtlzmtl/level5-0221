@@ -24,20 +24,29 @@ class PostService {
     });
   }
 
-  createPost = async (nickname, password, title, content) => {
+  createPost = async (userId, title, content) => {
     // 저장소(Repository)에게 데이터를 요청합니다.
-    const createPostData = await this.postRepository.createPost(nickname, password, title, content);
+    const createPostData = await this.postRepository.createPost(userId, title, content);
 
     // 비즈니스 로직을 수행한 후 사용자에게 보여줄 데이터를 가공합니다.
+    return createPostData;
+  }
+
+  findOnePost = async (postId) => {
+
+    const onePost = await this.postRepository.findOnePost(postId);
+
     return {
-      postId: createPostData.null,
-      nickname: createPostData.nickname,
-      title: createPostData.title,
-      content: createPostData.content,
-      createdAt: createPostData.createdAt,
-      updatedAt: createPostData.updatedAt,
+      postId: onePost.postId,
+      userId: onePost.userId,
+      nickname: onePost.nickname,
+      title: onePost.title,
+      content: onePost.content,
+      createdAt: onePost.createdAt,
+      updatedAt: onePost.updatedAt,
     };
   }
+
 }
 
 module.exports = PostService;

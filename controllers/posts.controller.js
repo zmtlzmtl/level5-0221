@@ -1,4 +1,5 @@
 const PostService = require('../services/posts.service');
+const { InvalidParamsError } = require("../exceptions/index.exception");
 
 // Post의 컨트롤러(Controller)역할을 하는 클래스
 class PostsController {
@@ -12,12 +13,25 @@ class PostsController {
   }
 
   createPost = async (req, res, next) => {
-    const { nickname, password, title, content } = req.body;
+    const { userId } = res.locals.user;
+    // console.log(res.locals.user)
+    const { title, content } = req.body;
 
+    if (!title || !content) {
+      throw new InvalidParamsError;
+    }
     // 서비스 계층에 구현된 createPost 로직을 실행합니다.
-    const createPostData = await this.postService.createPost(nickname, password, title, content);
+    const createPostData = await this.postService.createPost( userId, title, content);
 
     res.status(201).json({ data: createPostData });
+  }
+
+  getSeletePost = async (req, res) => {
+    const { postId } = req.params;
+
+    const post = await this.postService.findOnePost(postId);
+
+    res.status(200).json({ data: post })
   }
 }
 
