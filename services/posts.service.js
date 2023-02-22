@@ -34,7 +34,7 @@ class PostService {
 
   findOnePost = async (postId) => {
 
-    const onePost = await this.postRepository.findOnePost(postId);
+    const onePost = await this.postRepository.findOnePost(postId); //저장소에서 바꿔주면 안되나?
 
     return {
       postId: onePost.postId,
