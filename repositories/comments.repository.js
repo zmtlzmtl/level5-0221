@@ -6,7 +6,7 @@ class CommentsRepository {
         const comments = await Comments.findAll(postId);
 
         if(!comments) {
-            throw new ValidationError('해당하는 댓글이 존재하지 않습니다.')
+            throw new ValidationError('해당하는 댓글이 존재하지 않습니다.') /////////////// 비지니스 로직에서 웬만한 에러는 서비스에서
         }
         return comments;
     }

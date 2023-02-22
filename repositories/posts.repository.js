@@ -4,8 +4,17 @@ const { ValidationError } = require("../exceptions/index.exception");
 class PostRepository {
   findAllPost = async () => {
     // ORM인 Sequelize에서 Posts 모델의 findAll 메소드를 사용해 데이터를 요청합니다.
-    const posts = await Posts.findAll();
-
+    const posts = await Posts.findAll({
+      raw: true,
+      attributes: ["postId", "title", "createdAt", "updatedAt"],
+      include: [
+        {
+          model: Users,
+          attributes: ["userId", "nickname"],
+        }
+      ],
+      order: [["createdAt", "DESC"]],
+    })
     return posts;
   }
 
@@ -17,8 +26,7 @@ class PostRepository {
     });
     // ORM인 Sequelize에서 Posts 모델의 create 메소드를 사용해 데이터를 요청합니다.
     const createPostData = await Posts.create({ 
-      UserId: user.userId,
-      nickname: user.nickname, 
+      UserId: user.userId, 
       title, 
       content,
     });
@@ -26,7 +34,18 @@ class PostRepository {
     return createPostData;
   }
   findOnePost = async (postId) => {
-    const posts = await Posts.findOne({postId});
+    const post = await Posts.findOne({
+      raw: true,  //데이터 벨류 외의 다른 프로퍼티를 제외하고 데이터 벨류만내보내준다.
+      attributes: ["postId", "title", "content", "createdAt", "updatedAt"],
+      include: [
+        {
+          model: Users,
+          attributes: ["userId", "nickname"],
+        }
+      ],
+      where: {postId}
+    });
+    return post;
   }
 
   updatePost = async (userId, postId, title, content) => {
@@ -35,19 +54,14 @@ class PostRepository {
       { where: { postId, UserId: userId } }  //둘다 고유값이라 다른게 바뀔일은 없지만
     )//기록은 바뀌겠지만 다른 사용자 오류검출 시 DB를 한번 더 불러오나?
     
-    if (post < 1) {
-      throw new ValidationError('게시글이 정상적으로 수정되지 않았습니다.');
-    }
-    return post 
+    return post;
   }
 
   deletePost = async (userId, postId) => {
-    const post = await Posts.destroy({//delect 아님
+    const post = await Posts.destroy({  //delect 아님
       where: {postId, UserId: userId}
     })
-    if (post < 1) {
-      throw new ValidationError('게시글이 정상적으로 삭제되지 않았습니다.');
-    }
+    
     return post;
   }
 }

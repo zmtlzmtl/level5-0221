@@ -13,7 +13,7 @@ class UsersService {
     if (!user || password !== user.password) {
       throw new ValidationError("아이디 또는 비밀번호가 다릅니다.");
     }
-    
+
     return user;
   };
 

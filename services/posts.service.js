@@ -7,20 +7,16 @@ class PostService {
     // 저장소(Repository)에게 데이터를 요청합니다.
     const allPost = await this.postRepository.findAllPost();
 
-    // 호출한 Post들을 가장 최신 게시글 부터 정렬합니다.
-    allPost.sort((a, b) => {
-      return b.createdAt - a.createdAt;
-    })
-
     // 비즈니스 로직을 수행한 후 사용자에게 보여줄 데이터를 가공합니다.
     return allPost.map(post => {
       return {
         postId: post.postId,
-        userId: post.UserId,
+        UserId: post['User.userId'],
+        nickname: post['User.nickname'],
         title: post.title,
         createdAt: post.createdAt,
         updatedAt: post.updatedAt
-      }
+      } //content를 보여주지 않으려고
     });
   }
 
@@ -34,12 +30,12 @@ class PostService {
 
   findOnePost = async (postId) => {
 
-    const onePost = await this.postRepository.findOnePost(postId); //저장소에서 바꿔주면 안되나?
-
+    const onePost = await this.postRepository.findOnePost(postId); //저장소에서 바꿔야함
+    console.log(onePost)
     return {
       postId: onePost.postId,
-      userId: onePost.userId,
-      nickname: onePost.nickname,
+      UserId: onePost['User.userId'],
+      nickname: onePost['User.nickname'],
       title: onePost.title,
       content: onePost.content,
       createdAt: onePost.createdAt,
@@ -50,12 +46,20 @@ class PostService {
   updatePost = async (userId, postId, title, content) => {
 
     const upPost = await this.postRepository.updatePost(userId, postId, title, content);
+
+    if (upPost < 1) {
+      throw new ValidationError('게시글이 정상적으로 수정되지 않았습니다.');
+    }
     return upPost;
   }
 
   deletePost = async (userId, postId) => {
   
     const delPost = await this.postRepository.deletePost(userId, postId);
+
+    if (delPost < 1) {
+      throw new ValidationError('게시글이 정상적으로 삭제되지 않았습니다.');
+    }
     return delPost;
   }
 }
