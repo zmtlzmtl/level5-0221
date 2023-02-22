@@ -33,6 +33,30 @@ class PostsController {
 
     res.status(200).json({ data: post })
   }
+  updatePost = async (req, res) => {
+    const { userId } = res.locals.user;
+    const { postId } = req.params;
+    const { title, content } = req.body;
+    if (!postId || !title || !content ) {
+      throw new InvalidParamsError;
+    } 
+
+    const upPost = await this.postService.updatePost(userId, postId, title, content)
+    
+    res.status(200).json({ messege: "수정이 완료되었습니다.", upPost})
+  }
+
+  deletePost = async (req, res) => {
+    const { userId } = res.locals.user;
+    const { postId } = req.params;
+
+    if (!postId) {
+      throw new InvalidParamsError;
+    }
+    const delPost = await this.postService.deletePost(userId, postId)
+    
+    res.status(200).json({ messege: "수정이 완료되었습니다.", delPost})
+  } 
 }
 
 module.exports = PostsController;

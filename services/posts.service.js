@@ -47,6 +47,17 @@ class PostService {
     };
   }
 
+  updatePost = async (userId, postId, title, content) => {
+
+    const upPost = await this.postRepository.updatePost(userId, postId, title, content);
+    return upPost;
+  }
+
+  deletePost = async (userId, postId) => {
+  
+    const delPost = await this.postRepository.deletePost(userId, postId);
+    return delPost;
+  }
 }
 
 module.exports = PostService;
