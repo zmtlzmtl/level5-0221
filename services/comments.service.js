@@ -41,7 +41,7 @@ class CommentsService {
       comment,
       userId
     );
-    console.log(updateComment)
+
 
     if (updateComment < 1) {   //  !== 1이 되지 않았던 이유는 [ 1 ]이기 때문이다.
       const e = new Error("댓글이 정상적으로 수정되지 않았습니다.");

@@ -32,7 +32,7 @@ class UsersController {
     } 
   };
 
-  postCreateUser = async (req, res) => {
+  postCreateUser = async (req, res, next) => {
     try {
         const { nickname, password, confirm } = req.body;
 

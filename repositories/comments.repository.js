@@ -1,5 +1,4 @@
 const { Users, Comments } = require('../models');
-const { ValidationError } = require('../exceptions/index.exception');
 
 class CommentsRepository {
   findComments = async (postId) => {
@@ -19,6 +18,7 @@ class CommentsRepository {
   };
 
   postComments = async (postId, comment, userId) => {
+    
     const user = await Users.findOne({
       where: { userId },
     });
@@ -28,6 +28,7 @@ class CommentsRepository {
       PostId: postId,
       comment,
     });
+    
     return createComment;
   };
   putComments = async (postId, commentId, comment, userId) => {
