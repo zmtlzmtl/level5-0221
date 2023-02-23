@@ -2,46 +2,49 @@ const { Users, Comments } = require('../models');
 const { ValidationError } = require('../exceptions/index.exception');
 
 class CommentsRepository {
-    findComments = async (postId) => {
-        const comments = await Comments.findAll(postId);
+  findComments = async (postId) => {
+    const comments = await Comments.findAll({
+      raw: true,
+      attributes: ['commentId',"PostId", 'comment', "createdAt", "updatedAt"],
+      include: [
+        {
+          model: Users,
+          attributes: ["userId", "nickname"],
+        },
+      ],
+      where: { PostId: postId },
+      order: [["createdAt", "DESC"]],
+    });
+    return comments;
+  };
 
-        if(!comments) {
-            throw new ValidationError('해당하는 댓글이 존재하지 않습니다.') /////////////// 비지니스 로직에서 웬만한 에러는 서비스에서
-        }
-        return comments;
-    }
+  postComments = async (postId, comment, userId) => {
+    const user = await Users.findOne({
+      where: { userId },
+    });
 
-    postComments = async (postId, comment, userId) => {
-        const user = await Users.findOne({
-            where: {userId}
-        });
+    const createComment = await Comments.create({
+      UserId: user.userId,
+      PostId: postId,
+      comment,
+    });
+    return createComment;
+  };
+  putComments = async (postId, commentId, comment, userId) => {
+    const updateComment = await Comments.update(
+      { comment },
+      { where: { PostId: postId, UserId: userId, commentId } }
+    );
+    
+    return updateComment;
+  };
 
-        const createComment = await Comments.create({
-            UserId: user.userId,
-            PostId: postId,  //migretion에서 정의해준대로 달랑 postId, ㄴㄴ 
-            comment,
-        })
-        return createComment;
-    }
-    putComments = async (postId, commentId, comment, userId) => {
-        const updateComment = await Comments.update(
-            {comment},
-            {where: { PostId: postId, UserId: userId, commentId}}
-        );
-        if (updateComment < 1) {
-            throw new ValidationError('게시글이 정상적으로 수정되지 않았습니다.');
-        }
-        return updateComment;
-    }
-
-    deleteComments = async (postId, commentId, userId) => {
-        const destroyComment = await Comments.destroy(
-            {where: { PostId: postId, UserId: userId, commentId}}
-        );
-        if (destroyComment < 1) {
-            throw new ValidationError('게시글이 정상적으로 삭제되지 않았습니다.');
-        }
-        return destroyComment;
-    }
+  deleteComments = async (postId, commentId, userId) => {
+    const destroyComment = await Comments.destroy({
+      where: { PostId: postId, UserId: userId, commentId },
+    });
+    
+    return destroyComment;
+  };
 }
 module.exports = CommentsRepository;

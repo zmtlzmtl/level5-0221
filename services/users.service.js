@@ -11,7 +11,9 @@ class UsersService {
     });
 
     if (!user || password !== user.password) {
-      throw new ValidationError("아이디 또는 비밀번호가 다릅니다.");
+      const e = new Error('아이디 또는 비밀번호가 다릅니다.');
+      e.name = '412';
+      throw e;
     }
 
     return user;
@@ -28,10 +30,14 @@ class UsersService {
     const isExistUser = await this.findUser({ nickname });
 
     if (isExistUser) {
-      throw new ValidationError("유저가 존재합니다.");
+      const e = new Error('유저가 존재합니다.');
+      e.name = '412';
+      throw e;
     }
     if (password !== confirm) {
-      throw new ValidationError("비밀번호가 다릅니다.");
+      const e = new Error('비밀번호가 다릅니다.');
+      e.name = '412';
+      throw e;
     }
     const user = await this.usersRepository.postCreateUser({
       nickname,
